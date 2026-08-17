@@ -1,6 +1,6 @@
 # PoolPay - ESP32 M-Pesa Payment Terminal
 
-PoolPay is an IoT-based payment terminal system. It allows users to enter a phone number and payment amount using a physical keypad, displays prompts on an I2C LCD, and triggers a Safaricom M-Pesa STK Push via a custom Node.js Express backend. On a **confirmed successful payment**, the ESP32 also drives a **servo motor** to unlock a gate, turnstile, or door lock — making it a drop-in "pay to enter" terminal for pools, gyms, parking, or event access.
+PoolPay is an IoT-based payment terminal system. It allows users to enter a phone number and payment amount using a physical keypad, displays prompts on an I2C LCD, and triggers a Safaricom M-Pesa STK Push via a custom Node.js Express backend. On a **confirmed successful payment**, the ESP32 also drives a **servo motor** to unlock a gate, turnstile, or door lock, making it a drop-in "pay to enter" terminal for pools, gyms, parking, or event access.
 
 Instead of relying on fragile WebSocket connections, the ESP32 performs highly reliable HTTP polling against the backend database status endpoint to track transaction outcomes (Success, Cancelled, Wrong PIN, Insufficient Funds, etc.) in real-time.
 
@@ -14,15 +14,15 @@ A companion React web client (`client/`) also exists for browser-based payments 
 
 <img src="https://commons.wikimedia.org/wiki/Special:FilePath/ESP32_Dev_Board.jpg?width=420" alt="ESP32 development board" width="420">
 
-*Photo: [ESP32 Dev Board.jpg](https://commons.wikimedia.org/wiki/File:ESP32_Dev_Board.jpg) — Wikimedia Commons, CC BY-SA 4.0.*
+*Photo: [ESP32 Dev Board.jpg](https://commons.wikimedia.org/wiki/File:ESP32_Dev_Board.jpg), Wikimedia Commons, CC BY-SA 4.0.*
 
-The brains of the terminal. Any standard ESP32 DevKit (30 or 38-pin) works — it connects to Wi-Fi, drives the keypad/LCD/servo, and talks HTTP to the backend.
+The brains of the terminal. Any standard ESP32 DevKit (30 or 38-pin) works: it connects to Wi-Fi, drives the keypad/LCD/servo, and talks HTTP to the backend.
 
 ### 2. 4x3 Matrix Keypad
 
 <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Keypad_arduino.jpg?width=420" alt="Matrix membrane keypad" width="420">
 
-*Photo: [Keypad arduino.jpg](https://commons.wikimedia.org/wiki/File:Keypad_arduino.jpg) — Wikimedia Commons, CC BY-SA 4.0. (Shown: a 4x4 membrane keypad for reference — wiring below is for the 4x3 variant this project uses.)*
+*Photo: [Keypad arduino.jpg](https://commons.wikimedia.org/wiki/File:Keypad_arduino.jpg), Wikimedia Commons, CC BY-SA 4.0. (Shown: a 4x4 membrane keypad for reference; wiring below is for the 4x3 variant this project uses.)*
 
 | Keypad Pin | ESP32 GPIO | Description |
 | :--- | :--- | :--- |
@@ -38,7 +38,7 @@ The brains of the terminal. Any standard ESP32 DevKit (30 or 38-pin) works — i
 
 <img src="https://commons.wikimedia.org/wiki/Special:FilePath/MELT_16x2_LCD_alphanumeric_display_07(DXO).jpg?width=420" alt="16x2 I2C LCD display" width="420">
 
-*Photo: [MELT 16x2 LCD alphanumeric display 07(DXO).jpg](https://commons.wikimedia.org/wiki/File:MELT_16x2_LCD_alphanumeric_display_07(DXO).jpg) — Wikimedia Commons, CC0.*
+*Photo: [MELT 16x2 LCD alphanumeric display 07(DXO).jpg](https://commons.wikimedia.org/wiki/File:MELT_16x2_LCD_alphanumeric_display_07(DXO).jpg), Wikimedia Commons, CC0.*
 
 | LCD Pin | ESP32 Pin | Description |
 | :--- | :--- | :--- |
@@ -51,17 +51,17 @@ The brains of the terminal. Any standard ESP32 DevKit (30 or 38-pin) works — i
 
 <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Tower_Pro_SG90_micro_servo_motor.jpg?width=420" alt="SG90 micro servo motor" width="420">
 
-*Photo: [Tower Pro SG90 micro servo motor.jpg](https://commons.wikimedia.org/wiki/File:Tower_Pro_SG90_micro_servo_motor.jpg) — Wikimedia Commons, CC BY-SA 4.0.*
+*Photo: [Tower Pro SG90 micro servo motor.jpg](https://commons.wikimedia.org/wiki/File:Tower_Pro_SG90_micro_servo_motor.jpg), Wikimedia Commons, CC BY-SA 4.0.*
 
-Triggered automatically by the firmware when a poll returns `status: "success"` — it swings open to unlock, holds for a few seconds, then re-locks.
+Triggered automatically by the firmware when a poll returns `status: "success"`: it swings open to unlock, holds for a few seconds, then re-locks.
 
 | Servo Pin | ESP32 Pin | Description |
 | :--- | :--- | :--- |
 | **Signal** | **4** | PWM control signal |
 | **VCC (red)** | **External 5V** | Power (see note below) |
-| **GND (brown/black)** | **GND** | Ground — **must be shared** with the ESP32's GND |
+| **GND (brown/black)** | **GND** | Ground, **must be shared** with the ESP32's GND |
 
-> ⚠️ **Power note:** An SG90 can briefly draw 500–700 mA when starting or stalling — enough to brown out an ESP32 powered from USB if you tap the servo off its onboard 5V pin. Power the servo from a separate 5V supply (or a buck converter off a bench supply) and tie its ground to the ESP32's ground. For anything larger than an SG90 (e.g. a real gate actuator/solenoid lock), drive it through a relay or MOSFET instead of powering it directly from the ESP32.
+> ⚠️ **Power note:** An SG90 can briefly draw 500–700 mA when starting or stalling, enough to brown out an ESP32 powered from USB if you tap the servo off its onboard 5V pin. Power the servo from a separate 5V supply (or a buck converter off a bench supply) and tie its ground to the ESP32's ground. For anything larger than an SG90 (e.g. a real gate actuator/solenoid lock), drive it through a relay or MOSFET instead of powering it directly from the ESP32.
 
 ---
 
@@ -119,7 +119,7 @@ The backend is built with Node.js, Express, TypeScript, and MongoDB, and ships w
    ```
    > 💡 **Note:** Safaricom requires a public HTTPS callback URL. Use a tool like **ngrok** to tunnel your local port `5000` to the internet (`ngrok http 5000`) and set `MPESA_CALLBACK_URL` accordingly.
    >
-   > 🔒 **Security note:** `.env` is gitignored — keep it that way. Daraja consumer keys/secrets and passkeys are live credentials; never commit them, paste them into issues/chat logs, or reuse sandbox and production keys across environments. If a key ever leaks, rotate it in the [Daraja portal](https://developer.safaricom.co.ke/) immediately.
+   > 🔒 **Security note:** `.env` is gitignored, keep it that way. Daraja consumer keys/secrets and passkeys are live credentials; never commit them, paste them into issues/chat logs, or reuse sandbox and production keys across environments. If a key ever leaks, rotate it in the [Daraja portal](https://developer.safaricom.co.ke/) immediately.
 5. Start the development server:
    ```bash
    npm run dev
@@ -133,7 +133,7 @@ The backend is built with Node.js, Express, TypeScript, and MongoDB, and ships w
    * **LiquidCrystal_I2C** by Frank de Brabander
    * **ArduinoJson** by Benoit Blanchon (v6.x)
    * **ESP32Servo** by Kevin Harrington / John K. Bennett (drives the gate servo)
-3. Set your Wi-Fi credentials (the checked-in placeholders must be replaced — never commit real Wi-Fi credentials):
+3. Set your Wi-Fi credentials (the checked-in placeholders must be replaced; never commit real Wi-Fi credentials):
    ```cpp
    const char* ssid = "YOUR_WIFI_SSID";
    const char* password = "YOUR_WIFI_PASSWORD";
@@ -150,10 +150,10 @@ The backend is built with Node.js, Express, TypeScript, and MongoDB, and ships w
 
 ## 💳 Payment Gateways
 
-### M-Pesa (Daraja STK Push) — implemented
+### M-Pesa (Daraja STK Push): implemented
 The primary flow: the ESP32 collects phone + amount, the backend triggers an STK Push via Safaricom's Daraja API, and the result is polled back from MongoDB as described in the [User Workflow](#-user-workflow) below.
 
-### Stripe (card payments) — how to add it
+### Stripe (card payments): how to add it
 Stripe isn't wired up in this repo yet, but the backend is structured so it drops in cleanly alongside M-Pesa as a second payment route. This is a guide for adding it, not code that ships in this repo.
 
 1. **Install the SDK** in `backend/`:
@@ -173,7 +173,7 @@ Stripe isn't wired up in this repo yet, but the backend is structured so it drop
    const router = express.Router();
    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 
-   // POST /api/stripe/checkout — mirrors /api/stkpush's shape (phone/amount in, id out)
+   // POST /api/stripe/checkout, mirrors /api/stkpush's shape (phone/amount in, id out)
    router.post('/checkout', async (req: Request, res: Response) => {
      const { amount } = req.body as { amount: number }; // KES, converted to the smallest currency unit below
 
@@ -199,7 +199,7 @@ Stripe isn't wired up in this repo yet, but the backend is structured so it drop
 
    export default router;
    ```
-4. **Add a webhook route** to receive async payment confirmation — same role as `/api/stkpush/callback`. Stripe webhooks need the **raw** request body for signature verification, so this route must be registered **before** `express.json()` in `index.ts`:
+4. **Add a webhook route** to receive async payment confirmation, the same role as `/api/stkpush/callback`. Stripe webhooks need the **raw** request body for signature verification, so this route must be registered **before** `express.json()` in `index.ts`:
    ```ts
    app.post(
      '/api/stripe/webhook',
@@ -243,7 +243,7 @@ Stripe isn't wired up in this repo yet, but the backend is structured so it drop
 5. **State Lock**: Keypad input is disabled during payment processing.
 6. **Polling**: ESP32 queries the backend status endpoint every 3 seconds (giving up after 90 seconds).
 7. **Result Dispatch**: Once the user enters their PIN on their phone, the callback updates MongoDB, and the ESP32 registers the payment status on its next poll:
-   * **SUCCESS** — the LCD shows `PAYMENT SUCCESS` and the **servo unlocks the gate** for `GATE_OPEN_DURATION_MS` (default 5s) before automatically re-locking.
+   * **SUCCESS**: the LCD shows `PAYMENT SUCCESS` and the **servo unlocks the gate** for `GATE_OPEN_DURATION_MS` (default 5s) before automatically re-locking.
    * **CANCELLED**
    * **WRONG PIN**
    * **INSUFFICIENT FUNDS**

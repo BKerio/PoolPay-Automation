@@ -50,7 +50,7 @@ Keypad keypad = Keypad(makeKeymap(keys), rowPins, colPins, ROWS, COLS);
 // =====================================
 // Drives a gate, turnstile, or pool-entry lock that unlocks automatically
 // once a payment is confirmed SUCCESS. Powering the servo from the ESP32's
-// own 5V pin can brown out the board under load — feed it from a separate
+// own 5V pin can brown out the board under load, so feed it from a separate
 // 5V supply and tie the grounds together (see README wiring notes).
 
 Servo gateServo;
